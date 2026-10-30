@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundTracks - Map & Music App</title>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --soundcloud-orange: #FF5500;
+            --dark-bg: #121212;
+            --card-bg: #181818;
+            --text-main: #FFFFFF;
+            --text-muted: #A7A7A7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vvh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #000000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #282828;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span {
+            color: var(--spotify-green);
+        }
+
+        .api-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        #map-container {
+            flex: 1;
+            position: relative;
+            background-color: #242424;
+        }
+
+        /* Mock do Google Maps quando sem API Key */
+        .maps-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: radial-gradient(circle, #333 10%, #222 90%);
+        }
+
+        .maps-placeholder p {
+            color: var(--text-muted);
+            margin-top: 10px;
+            max-width: 400px;
+        }
+
+        .sidebar {
+            width: 420px;
+            background-color: #000000;
+            border-left: 1px solid #282828;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spotify-title { color: var(--spotify-green); }
+        .soundcloud-title { color: var(--soundcloud-orange); }
+
+        .player-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #282828;
+            transition: background-color 0.3s;
+        }
+
+        .player-card:hover {
+            background-color: #222222;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background-color: #2A2A2A;
+            border: 1px solid transparent;
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #535353;
+        }
+
+        .search-box button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 0 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.02);
+        }
+
+        .embed-container {
+            position: relative;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+        }
+
+        .instructions {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            background-color: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sound<span>Tracks</span> Map</h1>
+        <div class="api-status">Google Maps + Spotify + SoundCloud Integrated</div>
+    </header>
+
+    <div class="main-container">
+        <!-- LADO ESQUERDO: MAPA -->
+        <div id="map-container">
+            <!-- NOTA: Para produção, substitua este placeholder pela div real e carregue o script do Google Maps -->
+            <div class="maps-placeholder" id="google-map">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#A7A7A7" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <h3 style="margin-top: 15px;">Interface do Google Maps</h3>
+                <p>Para ativar o mapa dinâmico real, insira a sua chave de API no script do ficheiro HTML.</p>
+            </div>
+        </div>
+
+        <!-- LADO DIREITO: DASHBOARD DE ÁUDIO -->
+        <div class="sidebar">
+            
+            <div class="instructions">
+                <strong>Como funciona:</strong> Explore locais no mapa à esquerda. Controle a música ambiente e as playlists geográficas através dos players oficiais integrados abaixo.
+            </div>
+
+            <!-- MÓDULO SPOTIFY -->
+            <div class="player-card">
+                <div class="section-title spotify-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.075-.336.135-.668.47-.743 3.856-.88 7.15-.502 9.822 1.135.296.182.387.566.205.853zm1.224-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.676-1.114 8.248-.574 11.35 1.332.365.226.486.707.256 1.082zm.105-2.836C14.492 8.71 8.822 8.523 5.53 9.522c-.513.155-1.057-.134-1.213-.647-.155-.513.134-1.057.647-1.213 3.78-1.148 10.05-.935 14.007 1.414.462.273.61.874.337 1.336-.272.463-.87.615-1.334.343z"/></svg>
+                    Spotify Player
+                </div>
+                <div class="search-box">
+                    <input type="text" id="spotify-input" placeholder="Cole ID ou URL da Playlist/Track">
+                    <button onclick="updateSpotify()">Carregar</button>
+                </div>
+                <div class="embed-container">
+                    <!-- Embed padrão do Spotify (Playlist Focus) -->
+                    <iframe id="spotify-player" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0" height="152" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <!-- MÓDULO SOUNDCLOUD -->
+            <div class="player-card">
+                <div class="section-title soundcloud-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.56 17.15c.07.13.11.27.11.43 0 .49-.41.88-.91.88H3.37c-.76 0-1.37-.58-1.37-1.31 0-.64.47-1.17 1.11-1.28.04-1.32 1.15-2.37 2.52-2.37.51 0 .98.15 1.38.42.36-2.02 2.14-3.56 4.3-3.56 1.33 0 2.51.59 3.29 1.52.4-.23.86-.37 1.36-.37 1.38 0 2.52 1.03 2.68 2.37.13-.03.26-.04.4-.04 1.13 0 2.05.9 2.05 2.01s-.92 2.02-2.05 2.02h-4.32c-.44 0-.82-.32-.9-.72l-.12-.45c0-.02-.02-.04-.04-.04a.09.09 0 0 0-.09.09l-.02.43zm6.39-.72c.4 0 .72-.32.72-.71 0-.4-.32-.72-.72-.72s-.72.32-.72.72c0 .39.32.71.72.71zm-2.05-.71c0-.4-.32-.72-.72-.72s-.72.32-.72.72c0 .39.32.71.72.71s.72-.32.72-.71zm-2.05 0c0-.4-.32-.72-.71-.72s-.72.32-.72.72c0 .39.33.71.72.71s.71-.32.71-.71zm-2.05-.15c0-.32-.26-.57-.57-.57s-.57.25-.57.57v.15c0 .31.26.57.57.57s.57-.26.57-.57zm-1.82-1.3c0-.26-.21-.46-.46-.46-.26 0-.46.2-.46.46v1.45c0 .25.2.46.46.46.25 0 :.46-.21.46-.46zm-1.82-.87c0-.21-.17-.37-.37-.37s-.37.16-.37.37v2.32c0 .2.17.37.37.37s.37-.17.37-.37zm-1.82 1.34c0-.16-.13-.29-.29-.29-.16 0-.29.13-.29.29v.98c0 .16.13.29.29.29.16 0 .29-.13.29-.29zm-1.83.6c0-.11-.09-.2-.2-.2s-.2.09-.2.2v.38c0 .11.09.2.2.2s.2-.09.2-.2z"/></svg>
+                    SoundCloud Player
+                </div>
+                <div class="search-box">
+                    <input type="text" id="soundcloud-input" placeholder="Cole URL do SoundCloud Track/Playlist">
+                    <button onclick="updateSoundCloud()">Carregar</button>
+                </div>
+                <div class="embed-container">
+                    <!-- Embed padrão do SoundCloud -->
+                    <iframe id="soundcloud-player" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/499311036&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts de Integração e APIs -->
+    <script>
+        // 1. INTEGRAÇÃO GOOGLE MAPS
+        // Para usar em produção, descomente a linha abaixo no HTML e insira sua API KEY:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=SUA_API_KEY&callback=initMap" async defer><\/script>
+        
+        function initMap() {
+            // Configuração padrão centrada em Portugal
+            const defaultCoords = { lat: 39.3999, lng: -8.2245 }; 
+            
+            const map = new google.maps.Map(document.getElementById('map-container'), {
+                zoom: 7,
+                center: defaultCoords,
+                styles: [
+                    { "elementType": "geometry", "stylers": [{ "color": "#212121" }] },
+                    { "elementType": "labels.text.fill", "stylers": [{ "color": "#757575" }] },
+                    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#212121" }] },
+                    { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#757575" }] },
+                    { "featureType": "navigational", "elementType": "geometry", "stylers": [{ "color": "#303030" }] },
+                    { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#121212" }] },
+                    { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#3c3c3c" }] },
+                    { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#000000" }] }
+                ]
+            });
+
+            // Exemplo de Marcador Interativo que altera as playlists baseando-se no local
+            const marker = new google.maps.Marker({
+                position: { lat: 38.7223, lng: -9.1393 }, // Lisboa
+                map: map,
+                title: "Lisboa Hub - Clica para carregar a Wave local"
+            });
+
+            marker.addListener("click", () => {
+                // Altera dinamicamente os players ao clicar num ponto do mapa
+                document.getElementById('spotify-player').src = "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGmqZb6m?utm_source=generator";
+                document.getElementById('soundcloud-player').src = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293"/>;
+                alert("Ambiente musical alterado para: Sons de Lisboa!");
+            });
+        }
+
+        // Simulação do carregamento caso a API real do Google Maps seja injetada depois
+        if (typeof google !== 'undefined' && google.maps) {
+            initMap();
+        }
+
+        // 2. FUNÇÕES DE ATUALIZAÇÃO DOS PLAYERS VIA INPUT
+        function updateSpotify() {
+            let input = document.getElementById('spotify-input').value.trim();
+            if (!input) return alert('Por favor, introduza um ID ou link do Spotify valid.');
+            
+            let embedUrl = "https://open.spotify.com/embed/";
+            
+            if (input.includes("spotify.com/")) {
+                if (input.includes("playlist/")) {
+                    let id = input.split("playlist/")[1].split("?")[0];
+                    embedUrl += "playlist/" + id;
+                } else if (input.includes("track/")) {
+                    let id = input.split("track/")[1].split("?")[0];
+                    embedUrl += "track/" + id;
+                } else if (input.includes("album/")) {
+                    let id = input.split("album/")[1].split("?")[0];
+                    embedUrl += "album/" + id;
+                }
+            } else {
+                // Se for inserido diretamente o ID de uma playlist
+                embedUrl += "playlist/" + input;
+            }
+            
+            document.getElementById('spotify-player').src = embedUrl + "?utm_source=generator&theme=0";
+        }
+
+        function updateSoundCloud() {
+            let input = document.getElementById('soundcloud-input').value.trim();
+            if (!input) return alert('Por favor, introduza um link válido do SoundCloud.');
+            
+            if (!input.startsWith("http")) {
+                return alert('Insira o URL completo (ex: https://soundcloud.com/...)');
+            }
+            
+            let encodedUrl = encodeURIComponent(input);
+            let embedUrl = `https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true`;
+            
+            document.getElementById('soundcloud-player').src = embedUrl;
+        }
+    </script>
+</body>
+</html>
