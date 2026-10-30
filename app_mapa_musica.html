@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundTracks - Map & Music App</title>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --soundcloud-orange: #FF5500;
+            --dark-bg: #121212;
+            --card-bg: #181818;
+            --text-main: #FFFFFF;
+            --text-muted: #A7A7A7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #000000;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #282828;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span {
+            color: var(--spotify-green);
+        }
+
+        .api-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        #map-container {
+            flex: 1;
+            position: relative;
+            background-color: #242424;
+        }
+
+        #google-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 420px;
+            background-color: #000000;
+            border-left: 1px solid #282828;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spotify-title { color: var(--spotify-green); }
+        .soundcloud-title { color: var(--soundcloud-orange); }
+
+        .player-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #282828;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background-color: #2A2A2A;
+            border: 1px solid transparent;
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #535353;
+        }
+
+        .search-box button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 0 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .embed-container {
+            position: relative;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+            display: block;
+        }
+
+        .instructions {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            background-color: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #555;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sound<span>Tracks</span> Map</h1>
+        <div class="api-status">Google Maps + Spotify + SoundCloud Integrated</div>
+    </header>
+
+    <div class="main-container">
+        <!-- MAPA -->
+        <div id="map-container">
+            <div id="google-map"></div>
+        </div>
+
+        <!-- DASHBOARD LATERAL -->
+        <div class="sidebar">
+            <div class="instructions">
+                <strong>Como funciona:</strong> Explore locais no mapa à esquerda. Controle a música ambiente através dos players integrados ou envie faixas remotamente via site de extensões.
+            </div>
+
+            <!-- SPOTIFY -->
+            <div class="player-card">
+                <div class="section-title spotify-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.075-.336.135-.668.47-.743 3.856-.88 7.15-.502 9.822 1.135.296.182.387.566.205.853zm1.224-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.676-1.114 8.248-.574 11.35 1.332.365.226.486.707.256 1.082zm.105-2.836C14.492 8.71 8.822 8.523 5.53 9.522c-.513.155-1.057-.134-1.213-.647-.155-.513.134-1.057.647-1.213 3.78-1.148 10.05-.935 14.007 1.414.462.273.61.874.337 1.336-.272.463-.87.615-1.334.343z"/></svg>
+                    Spotify Player
+                </div>
+                <div class="search-box">
+                    <input type="text" id="spotify-input" placeholder="Cole ID ou URL da Playlist/Track">
+                    <button onclick="updateSpotify()">Carregar</button>
+                </div>
+                <div class="embed-container">
+                    <iframe id="spotify-player" src="https://spotify.com" height="80" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <!-- SOUNDCLOUD -->
+            <div class="player-card">
+                <div class="section-title soundcloud-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.56 17.15c.07.13.11.27.11.43 0 .49-.41.88-.91.88H3.37c-.76 0-1.37-.58-1.37-1.31 0-.64.47-1.17 1.11-1.28.04-1.32 1.15-2.37 2.52-2.37.51 0 .98.15 1.38.42.36-2.02 2.14-3.56 4.3-3.56 1.33 0 2.51.59 3.29 1.52.4-.23.86-.37 1.36-.37 1.38 0 2.52 1"/></svg>
+                    SoundCloud Player
+                </div>
+                <div class="search-box">
+                    <input type="text" id="soundcloud-input" value="https://soundcloud.com" placeholder="Cole URL do SoundCloud">
+                    <button onclick="updateSoundCloud()">Carregar</button>
+                </div>
+                <div class="embed-container">
+                    <iframe id="soundcloud-player" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://soundcloud.com"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initMap() {
+            const porto = { lat: 41.1579, lng: -8.6291 }; 
+            const map = new google.maps.Map(document.getElementById("google-map"), {
+                zoom: 11,
+                center: porto,
+                styles: [
+                    { elementType: "geometry", stylers: [{ color: "#212121" }] },
+                    { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#383838" }] },
+                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] }
+                ]
+            });
+
+            new google.maps.Marker({
+                position: porto,
+                map: map,
+                title: "Filipe Pereira Audio Spot"
+            });
+        }
+
+        function updateSpotify() {
+            const input = document.getElementById('spotify-input').value;
+            if (!input) return;
+            let embedUrl = input;
+            if (input.includes('open.spotify.com') && !input.includes('/embed/')) {
+                embedUrl = input.replace('://spotify.com', '://spotify.comembed/');
+            }
+            document.getElementById('spotify-player').src = embedUrl;
+        }
+
+        function updateSoundCloud() {
+            const input = document.getElementById('soundcloud-input').value;
+            if (!input) return;
+            loadSoundCloudTrack(input);
+        }
+
+        function loadSoundCloudTrack(url) {
+            document.getElementById('soundcloud-input').value = url;
+            const cleanUrl = encodeURIComponent(url);
+            document.getElementById('soundcloud-player').src = `https://soundcloud.com{cleanUrl}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false`;
+        }
+
+        // COMUNICAÇÃO REMOTA: Recebe faixas enviadas via site.html
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'LOAD_SOUNDCLOUD') {
+                loadSoundCloudTrack(event.data.url);
+            }
+        });
+    </script>
+    <script src="https://googleapis.com" async defer></script>
+</body>
+</html>
